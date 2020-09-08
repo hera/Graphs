@@ -43,18 +43,26 @@ class Graph:
 
             print(dequeued)
 
-            for v in self.vertices[dequeued]:
+            for v in self.get_neighbors(dequeued):
                 if v not in visited:
                     q.enqueue(v)
-            
-
 
     def dft(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-        """
-        pass  # TODO
+        to_visit = Stack()
+        visited = set()
+
+        to_visit.push(starting_vertex)
+
+        while to_visit.size() > 0:
+            popped = to_visit.pop()
+
+            if popped not in visited:
+                print(popped)
+                visited.add(popped)
+
+                for v in self.get_neighbors(popped):
+                    to_visit.push(v)
+
 
     def dft_recursive(self, starting_vertex):
         """
