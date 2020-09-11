@@ -12,9 +12,9 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-# map_file = "maps/test_loop.txt"
+map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
-map_file = "maps/main_maze.txt"
+# map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -25,11 +25,50 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
-# Fill this out with directions to walk
-# traversal_path = ['n', 'n']
+#-------------------------------------------------------------------------------------
+
 traversal_path = []
 
+opposites = {"n": "s", "s": "n", "w": "e", "e": "w"}
 
+previous_steps = []
+room_path = {}
+visited = set()
+
+# keep going until visit all rooms
+while len(visited) < len(room_graph):
+    room_id = player.current_room.id
+
+    # if this is the first time visiting the room
+    if room_id not in room_path:
+        # save it in 'visited' (no duplicates)
+        visited.add(room_id)
+        # save all possible directions for this room
+        room_path[room_id] = player.current_room.get_exits()
+
+    # if there's no directions left, go back
+    if len(room_path[room_id]) < 1:
+        previous_direction = previous_steps.pop()
+        traversal_path.append(previous_direction)
+
+        # move user
+        player.travel(previous_direction)
+    else:
+        # take a possible direction from the end of the list
+        next_direction = room_path[room_id].pop()
+
+        # record it
+        traversal_path.append(next_direction)
+
+        # save directions for later, so that I can go back
+        previous_steps.append(opposites[next_direction])
+
+        # move user to another room
+        player.travel(next_direction)
+
+
+
+#-------------------------------------------------------------------------------------
 
 # TRAVERSAL TEST
 visited_rooms = set()
